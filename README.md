@@ -2,7 +2,7 @@
 This is for test project
 
 ## 1. How to use the class
-    from memory improt MemoryManager
+    from memory import MemoryManager
 
 ## 2. How to test project
     python -m unittest 
