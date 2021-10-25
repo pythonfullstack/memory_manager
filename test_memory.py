@@ -32,6 +32,7 @@ class MemoryManagerTestCase(TestCase):
         self.assertEqual(m.num_bytes, self.num_bytes)
         self.assertEqual(m.data, [None] * self.num_bytes)
         self.assertEqual(m._none_index_list, list(range(self.num_bytes)))
+        self.assertEqual(m._index_list, [])
         self.assertEqual(m._buffer, self.obj)
 
     def test_alloc(self):
@@ -83,6 +84,7 @@ class MemoryManagerTestCase(TestCase):
         1) Checking when nothing has been allocated, it should raise NotAllocatedError
         2) Checking free after allocate 5 objects into memory manager
         3) Checking flexible allocate function
+        4) Checking in case of no arguments in function free
         """
         # Not Allocated
         m = MemoryManager(self.obj, self.num_bytes)
@@ -101,6 +103,12 @@ class MemoryManagerTestCase(TestCase):
         # Test alloc(2)
         m.alloc(2, self.obj)
         self.assertEqual(m.data, [self.obj] * self.num_bytes)
+
+        # No arguments in function free
+        m.free()
+        m.free()
+        m.free()
+        self.assertEqual(m._none_index_list, [2, 3, 4])
 
     def test_thread_safe(self):
         """

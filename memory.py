@@ -34,7 +34,7 @@ class MemoryManager:
     """
     A class of Memory Manager
     attributes: public: num_bytes, data,
-                protected: _none_index_list, _buffer
+                protected: _index_list, _none_index_list, _buffer
     methods: public methods: alloc(), free()
     """
 
@@ -43,6 +43,7 @@ class MemoryManager:
             raise MustGreaterThanZeroError
         self.num_bytes = num_bytes
         self.data: list = [None] * num_bytes
+        self._index_list = []
         self._none_index_list: list = list(range(num_bytes))  # the list storing index of None in data
         self._buffer = buffer
 
@@ -65,15 +66,20 @@ class MemoryManager:
             else:
                 for _ in range(size):
                     self.data[self._none_index_list[0]] = obj
-                    self._none_index_list.pop(0)
+                    self._index_list.append(self._none_index_list.pop(0))
 
-    def free(self, index: int, *args, **kwargs):
+    def free(self, index=None, *args, **kwargs):
+
         if len(self._none_index_list) == self.num_bytes:
             raise NotAllocatedError
-
-        if index in self._none_index_list:
-            sys.stdout.write(f"Index {index}, It's been already free\n")
-        else:
+        if index is None:
+            self.data[self._index_list[-1]] = None
+            index = self._index_list.pop(-1)
             self._none_index_list.append(index)
-            self._none_index_list = sorted(self._none_index_list)
-            self.data[index] = None
+        else:
+            if index in self._none_index_list:
+                sys.stdout.write(f"Index {index}, It's been already free\n")
+            else:
+                self._none_index_list.append(index)
+                self.data[index] = None
+        self._none_index_list = sorted(self._none_index_list)
